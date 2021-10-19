@@ -15,7 +15,7 @@ class Shutup(commands.Cog):
         self.config.register_guild(**default_guild)
         self.bot = bot
         
-    @commands.command(name="shutup")
+    @commands.group(invoke_without_command=True)
     async def shutup(self, ctx):
         '''
         Mutes the specified user for an amount of time set by admins.
@@ -23,9 +23,9 @@ class Shutup(commands.Cog):
         '''
         await ctx.send("No you shutup!")
         
-    @commands.command(name="shutup len")
+    @shutup.command()
     @commands.admin()
-    async def shutup_len(self, ctx):
+    async def length(self, ctx):
         '''
         Sets how long a mute lasts for when shutup is used. Can only be used by admins
         '''
