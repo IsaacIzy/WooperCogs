@@ -10,7 +10,7 @@ class Shutup(commands.Cog):
         default_guild = {
             "length" : 30,      # Time the mute lasts in seconds
             "uses" : 1,            # Number of time shutup can be used per day
-            "admin_abuse" : false # Can shutup be used on admins?
+            "admin_abuse" : False # Can shutup be used on admins?
         }
         self.config.register_guild(**default_guild)
         self.bot = bot
