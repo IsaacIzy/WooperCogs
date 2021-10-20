@@ -10,7 +10,7 @@ class Shutup(commands.Cog):
         # Default configuration options. Identifier is dabs#4269 discord ID
         self.config = Config.get_conf(self, identifier=152209660886253568)
         default_guild = {
-            "length" : "30 seconds",      # Time the mute lasts in seconds
+            "length" : "30s shutup",      # Time the mute lasts in seconds
             "uses" : 1,            # Number of time shutup can be used per day
             "admin_abuse" : False # Can shutup be used on admins?
         }
@@ -30,7 +30,7 @@ class Shutup(commands.Cog):
         '''
         length = self.config.guild(ctx.guild).length
         await ctx.send(f"Muting {user} for {length}")
-        mutes.mute(ctx, user, length)
+        await ctx.invoke(self.bot.get_command('mute'), ctx=ctx, users=[user], time_and_reason=length)
 
         
     @shutup.command()
