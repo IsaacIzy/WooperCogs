@@ -42,7 +42,7 @@ class Shutup(commands.Cog):
         time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
         last_use = await self.config.member(ctx.author).last_use()
         now = datetime.now()
-        bot_ctx = ctx
+        bot_ctx = ctx.copy()
         bot_ctx.author = self.bot.user
         if last_use is not None:
             delta_hours = divmod((now - datetime.strptime(last_use, "%c")).total_seconds(), 3600)[0]
