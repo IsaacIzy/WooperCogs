@@ -21,7 +21,7 @@ class Shutup(commands.Cog):
     # Commands
         
     @commands.group(invoke_without_command=True)
-    async def shutup(self, ctx, user): 
+    async def shutup(self, ctx, user: discord.Member): 
         '''
         Mutes the specified user for an amount of time set by admins.
         Can only be used a certain number of times per day, also set by admins
