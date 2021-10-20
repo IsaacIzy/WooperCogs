@@ -1,7 +1,7 @@
 
 from redbot.core import commands
 from redbot.core import Config
-from redbot.cogs.mutes import mutes
+from redbot.cogs.mutes import mutes, converters
 
 import discord
 
@@ -31,8 +31,9 @@ class Shutup(commands.Cog):
         !shutup @user
         '''
         length = self.config.guild(ctx.guild).length()
+        time_and_reason = converters.MuteTime
         await ctx.send(f"Muting {user} for {length}")
-        await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason="30s")
+        await ctx.invoke(self.bot.get_command('mute'), user, '30')
 
         
     @shutup.command()
