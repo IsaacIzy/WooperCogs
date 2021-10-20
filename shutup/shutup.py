@@ -15,7 +15,7 @@ class Shutup(commands.Cog):
         self.config = Config.get_conf(self, identifier=152209660886253568)
         default_guild = {
             "length" : 30,      # Time the mute lasts in seconds
-            "cooldown" : 1,       # How many hours until shutup can be used again
+            "cooldown" : 0,       # How many hours until shutup can be used again
             "admin_abuse" : False # Can shutup be used on admins?
         }
         default_member = {
