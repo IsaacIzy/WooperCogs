@@ -18,10 +18,11 @@ class Shutup(commands.Cog):
             "cooldown" : 1,       # How many hours until shutup can be used again
             "admin_abuse" : False # Can shutup be used on admins?
         }
-        default_user = {
+        default_member = {
             "last_use" : None   # datetime when shutup was last used
         }
         self.config.register_guild(**default_guild)
+        self.config.register_member(**default_member)
         self.bot = bot
         
         
@@ -39,7 +40,7 @@ class Shutup(commands.Cog):
             length = await self.config.guild(ctx.guild).length()
             cooldown = await self.config.guild(ctx.guild).cooldown()
             time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
-            last_use = await self.config.member(ctx.author).last_use()
+            last_use = await datetime.strptime(self.config.member(ctx.author).last_use(), "%c")
             now = datetime.now()
             if last_use is not None:
                 delta_hours = divmod((now - last_use).total_seconds(), 3600)[0]
@@ -47,10 +48,10 @@ class Shutup(commands.Cog):
                     await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
                     await ctx.invoke(self.bot.get_command('mute'), users=[ctx.author], time_and_reason=time_and_reason)
                 else:
-                    last_use = await self.config.member(ctx.author).last_use.set(now)
+                    last_use = await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
                     await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
             else:
-                await self.config.member(ctx.author).last_use.set(now)
+                await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
                 await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
 
         
