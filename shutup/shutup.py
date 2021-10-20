@@ -40,10 +40,10 @@ class Shutup(commands.Cog):
             length = await self.config.guild(ctx.guild).length()
             cooldown = await self.config.guild(ctx.guild).cooldown()
             time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
-            last_use = await datetime.strptime(self.config.member(ctx.author).last_use(), "%c")
+            last_use = await self.config.member(ctx.author).last_use()
             now = datetime.now()
             if last_use is not None:
-                delta_hours = divmod((now - last_use).total_seconds(), 3600)[0]
+                delta_hours = divmod((now - datetime.strptime(last_use, "%c")).total_seconds(), 3600)[0]
                 if delta_hours < cooldown:
                     await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
                     await ctx.invoke(self.bot.get_command('mute'), users=[ctx.author], time_and_reason=time_and_reason)
