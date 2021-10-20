@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 red-discordbot = "*"
+"discord.py" = "*"
 
 [dev-packages]
 

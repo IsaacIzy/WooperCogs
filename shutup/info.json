@@ -4,5 +4,6 @@
     "install_msg" : "You can now MAKE your friends stfu",
     "short" : "Make your friends stfu",
     "description" : "Mute someone when you type !shutup <user>. How long the mute is and how often users can mute someone is configurable by server admins",
+    "requirements" : ["discord.py"],
     "tags" : ["fun","mute"]
 }
