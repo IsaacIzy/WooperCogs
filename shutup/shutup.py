@@ -28,7 +28,7 @@ class Shutup(commands.Cog):
         
     # Commands
         
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True, pass_context=True)
     async def shutup(self, ctx, user: discord.Member): 
         '''
         Mutes the specified user for an amount of time set by admins.
@@ -36,26 +36,27 @@ class Shutup(commands.Cog):
 
         !shutup @user
         '''
-        async with ctx.typing():
-            caller = ctx.author
-            length = await self.config.guild(ctx.guild).length()
-            cooldown = await self.config.guild(ctx.guild).cooldown()
-            time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
-            last_use = await self.config.member(ctx.author).last_use()
-            now = datetime.now()
-            if last_use is not None:
-                delta_hours = divmod((now - datetime.strptime(last_use, "%c")).total_seconds(), 3600)[0]
-                if delta_hours < cooldown:
-                    bot_msg = await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
-                    bot_ctx = ctx
-                    bot_ctx.author = bot_msg.author
-                    await bot_ctx.invoke(self.bot.get_command('mute'), users=[caller], time_and_reason=time_and_reason)
-                else:
-                    last_use = await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
-                    await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
+        caller = ctx.author
+        length = await self.config.guild(ctx.guild).length()
+        cooldown = await self.config.guild(ctx.guild).cooldown()
+        time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
+        last_use = await self.config.member(ctx.author).last_use()
+        now = datetime.now()
+        bot_ctx = ctx
+        bot_ctx.author = self.bot.user
+        if last_use is not None:
+            delta_hours = divmod((now - datetime.strptime(last_use, "%c")).total_seconds(), 3600)[0]
+            if delta_hours < cooldown:
+                bot_msg = await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
+                # Copy this commands context, then modify the author to be the bot, otherwise !mute
+                # gets invoked as the user who called !shutup, and you can't mute yourself
+                await bot_ctx.invoke(self.bot.get_command('mute'), users=[caller], time_and_reason=time_and_reason)
             else:
-                await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
-                await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
+                last_use = await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
+                await bot_ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
+        else:
+            await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
+            await bot_ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
 
         
     @shutup.command()
@@ -76,7 +77,7 @@ class Shutup(commands.Cog):
 
     @shutup.command()
     @commands.admin()
-    async def uses(self, ctx):
+    async def cooldown(self, ctx):
         '''
         Sets how many uses of shutup users have per day.
         Set to 0 for unlimited uses
