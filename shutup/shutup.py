@@ -55,8 +55,8 @@ class Shutup(commands.Cog):
                 await ctx.invoke(self.bot.get_command('mute'), users=[caller], time_and_reason=time_and_reason)
             else:
                 last_use = await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
-                await ctx.send(f"invoking mute command as {str(ctx.author)}")
                 ctx.author = bot_user
+                await ctx.send(f"invoking mute command as {str(ctx.author)}")
                 await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
         else:
             await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
