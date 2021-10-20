@@ -32,7 +32,7 @@ class Shutup(commands.Cog):
         '''
         length = self.config.guild(ctx.guild).length()
         await ctx.send(f"Muting {user} for {length}")
-        await ctx.invoke(self.bot.get_command('mute'), users=[user])
+        await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason="30s")
 
         
     @shutup.command()
