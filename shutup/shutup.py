@@ -3,6 +3,8 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.cogs.mutes import mutes
 
+import discord
+
 class Shutup(commands.Cog):
     '''Make ur friends stfu'''
     
