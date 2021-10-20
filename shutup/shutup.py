@@ -36,7 +36,7 @@ class Shutup(commands.Cog):
         time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
         await ctx.send(time_and_reason.get("duration", None))
         await ctx.send(f"Muting {user} for {length}")
-        await ctx.invoke(self.bot.get_command('mute'), user, time_and_reason)
+        await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
 
         
     @shutup.command()
