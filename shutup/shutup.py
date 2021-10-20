@@ -31,7 +31,7 @@ class Shutup(commands.Cog):
         !shutup @user
         '''
         length = self.config.guild(ctx.guild).length()
-        time_and_reason = converters.MuteTime().convert(ctx, length)
+        time_and_reason = "30 seconds"
         await ctx.send(time_and_reason.get("duration", None))
         await ctx.send(f"Muting {user} for {length}")
         await ctx.invoke(self.bot.get_command('mute'), user, time_and_reason)
