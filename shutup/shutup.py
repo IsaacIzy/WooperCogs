@@ -15,8 +15,11 @@ class Shutup(commands.Cog):
         self.config = Config.get_conf(self, identifier=152209660886253568)
         default_guild = {
             "length" : 30,      # Time the mute lasts in seconds
-            "uses" : 1,            # Number of time shutup can be used per day
+            "cooldown" : 1,       # How many hours until shutup can be used again
             "admin_abuse" : False # Can shutup be used on admins?
+        }
+        default_user = {
+            "last_use" : None   # datetime when shutup was last used
         }
         self.config.register_guild(**default_guild)
         self.bot = bot
@@ -32,9 +35,23 @@ class Shutup(commands.Cog):
 
         !shutup @user
         '''
-        length = await self.config.guild(ctx.guild).length()
-        time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
-        await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
+        async with ctx.typing():
+            length = await self.config.guild(ctx.guild).length()
+            cooldown = await self.config.guild(ctx.guild).cooldown()
+            time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
+            last_use = await self.config.member(ctx.author).last_use()
+            now = datetime.now()
+            if last_use is not None:
+                delta_hours = divmod((now - last_use).total_seconds(), 3600)[0]
+                if delta_hours < cooldown:
+                    await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
+                    await ctx.invoke(self.bot.get_command('mute'), users=[ctx.author], time_and_reason=time_and_reason)
+                else:
+                    last_use = await self.config.member(ctx.author).last_use.set(now)
+                    await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
+            else:
+                await self.config.member(ctx.author).last_use.set(now)
+                await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
 
         
     @shutup.command()
@@ -60,7 +77,7 @@ class Shutup(commands.Cog):
         Sets how many uses of shutup users have per day.
         Set to 0 for unlimited uses
 
-        !shutup uses <0-10>
+        !shutup uses <0-24>
         '''
         await ctx.send("it works pt2 lol")
     
