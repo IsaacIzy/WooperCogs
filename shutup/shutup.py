@@ -1,5 +1,7 @@
+
 from redbot.core import commands
 from redbot.core import Config
+from redbot.cogs import Mutes 
 
 class Shutup(commands.Cog):
     '''Make ur friends stfu'''
@@ -8,26 +10,66 @@ class Shutup(commands.Cog):
         # Default configuration options. Identifier is dabs#4269 discord ID
         self.config = Config.get_conf(self, identifier=152209660886253568)
         default_guild = {
-            "length" : 30,      # Time the mute lasts in seconds
+            "length" : "30 seconds",      # Time the mute lasts in seconds
             "uses" : 1,            # Number of time shutup can be used per day
             "admin_abuse" : False # Can shutup be used on admins?
         }
         self.config.register_guild(**default_guild)
         self.bot = bot
         
+        
+    # Commands
+        
     @commands.group(invoke_without_command=True)
-    async def shutup(self, ctx):
+    async def shutup(self, ctx, user: discord.Member): 
         '''
         Mutes the specified user for an amount of time set by admins.
         Can only be used a certain number of times per day, also set by admins
+
+        !shutup @user
         '''
-        await ctx.send("No you shutup!")
+        await ctx.send(f"Muting {user} for {length}")
+        Mutes.mute(ctx, user, length)
+
         
     @shutup.command()
     @commands.admin()
-    async def length(self, ctx):
+    async def length(self, ctx, length):
         '''
         Sets how long a mute lasts for when shutup is used. Can only be used by admins
+
+        !shutup length <30-3600>
         '''
+        if length in range(30, 3601): 
+            await self.config.guild(ctx.guild).length.set(length)
+            await ctx.send(f"Shutup mute length set to {length} seconds")
+        else:
+            await ctx.send("Please enter a length between 30 and 3600")
+        
         await ctx.send("it works lol")
+
+    @shutup.command()
+    @commands.admin()
+    async def uses(self, ctx):
+        '''
+        Sets how many uses of shutup users have per day.
+        Set to 0 for unlimited uses
+
+        !shutup uses <0-10>
+        '''
+        await ctx.send("it works pt2 lol")
+    
+    @shutup.command()
+    @commands.is_owner()
+    async def admin_abuse(self, ctx):
+        '''
+        Toggles whether or not admins can be muted by shutup
+
+        !shutup adminabuse
+        ''' 
+        # TODO
+        
+    # Utility functions
+    
+        
         
