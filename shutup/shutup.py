@@ -32,7 +32,7 @@ class Shutup(commands.Cog):
 
         !shutup @user
         '''
-        length = self.config.guild(ctx.guild).length()
+        length = await self.config.guild(ctx.guild).length()
         time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
         await ctx.send(time_and_reason.get("duration", None))
         await ctx.send(f"Muting {user} for {length}")
