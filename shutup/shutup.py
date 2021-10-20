@@ -38,29 +38,31 @@ class Shutup(commands.Cog):
         !shutup @user
         '''
         caller = ctx.author
+        bot_user = self.bot.user
         length = await self.config.guild(ctx.guild).length()
         cooldown = await self.config.guild(ctx.guild).cooldown()
         time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
         last_use = await self.config.member(ctx.author).last_use()
         now = datetime.now()
-        bot_ctx = copy.deepcopy(ctx)
-        bot_ctx.author = self.bot.user
         if last_use is not None:
             delta_hours = divmod((now - datetime.strptime(last_use, "%c")).total_seconds(), 3600)[0]
             if delta_hours < cooldown:
                 await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
                 # Copy this commands context, then modify the author to be the bot, otherwise !mute
                 # gets invoked as the user who called !shutup, and you can't mute yourself
+                ctx.author = bot_user
                 await ctx.send(f"invoking mute command as {str(bot_ctx.author)}")
-                await bot_ctx.invoke(self.bot.get_command('mute'), users=[caller], time_and_reason=time_and_reason)
+                await ctx.invoke(self.bot.get_command('mute'), users=[caller], time_and_reason=time_and_reason)
             else:
                 last_use = await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
                 await ctx.send(f"invoking mute command as {str(bot_ctx.author)}")
-                await bot_ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
+                ctx.author = bot_user
+                await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
         else:
             await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
+            ctx.author = bot_user
             await ctx.send(f"invoking mute command as {str(bot_ctx.author)}")
-            await bot_ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
+            await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
 
         
     @shutup.command()
