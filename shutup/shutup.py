@@ -3,6 +3,8 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.cogs.mutes import mutes, converters
 
+from datetime import timedelta
+
 import discord
 
 class Shutup(commands.Cog):
@@ -12,7 +14,7 @@ class Shutup(commands.Cog):
         # Default configuration options. Identifier is dabs#4269 discord ID
         self.config = Config.get_conf(self, identifier=152209660886253568)
         default_guild = {
-            "length" : "30s shutup",      # Time the mute lasts in seconds
+            "length" : 30,      # Time the mute lasts in seconds
             "uses" : 1,            # Number of time shutup can be used per day
             "admin_abuse" : False # Can shutup be used on admins?
         }
@@ -31,7 +33,7 @@ class Shutup(commands.Cog):
         !shutup @user
         '''
         length = self.config.guild(ctx.guild).length()
-        time_and_reason = "30 seconds"
+        time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
         await ctx.send(time_and_reason.get("duration", None))
         await ctx.send(f"Muting {user} for {length}")
         await ctx.invoke(self.bot.get_command('mute'), user, time_and_reason)
