@@ -45,12 +45,11 @@ class Shutup(commands.Cog):
         last_use = await self.config.member(ctx.author).last_use()
         now = datetime.now()
         if last_use is not None:
+            # How long it has been since last !shutup use in seconds
             delta_hours = divmod((now - datetime.strptime(last_use, "%c")).total_seconds(), 3600)[0]
             if delta_hours < cooldown:
                 await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
-                # Copy this commands context, then modify the author to be the bot, otherwise !mute
-                # gets invoked as the user who called !shutup, and you can't mute yourself
-                ctx.author = bot_user
+                ctx.author = bot_user.author
                 await ctx.send(f"invoking mute command as {str(ctx.author)}")
                 await ctx.invoke(self.bot.get_command('mute'), users=[caller], time_and_reason=time_and_reason)
             else:
