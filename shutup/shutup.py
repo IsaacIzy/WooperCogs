@@ -50,21 +50,21 @@ class Shutup(commands.Cog):
             if delta_hours < cooldown:
                 await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
                 await ctx.send(f"Running mute command as {str(run_as)}")
-                mute_cmd = copy(ctx.message)
+                mute_cmd = copy.deepcopy(ctx.message)
                 mute_cmd.author = run_as
                 mute_cmd.content = ctx.prefix + f"mute {caller} 30s shutup"
                 ctx.bot.dispatch("message", mute_cmd)
             else:
                 last_use = await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
-                await ctx.send(f"invoking mute command as {str(ctx.author)}")
-                mute_cmd = copy(ctx.message)
+                await ctx.send(f"invoking mute command as {str(run_as)}")
+                mute_cmd = copy.deepcopy(ctx.message)
                 mute_cmd.author = run_as
                 mute_cmd.content = ctx.prefix + f"mute {user} 30s shutup"
                 ctx.bot.dispatch("message", mute_cmd)
         else:
             await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
-            await ctx.send(f"invoking mute command as {str(ctx.author)}")
-            mute_cmd = copy(ctx.message)
+            await ctx.send(f"invoking mute command as {str(run_as)}")
+            mute_cmd = copy.deepcopy(ctx.message)
             mute_cmd.author = run_as
             mute_cmd.content = ctx.prefix + f"mute {user} 30s shutup"
             ctx.bot.dispatch("message", mute_cmd)
