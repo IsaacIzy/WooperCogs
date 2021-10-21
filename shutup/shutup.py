@@ -38,7 +38,7 @@ class Shutup(commands.Cog):
         !shutup @user
         '''
         caller = ctx.author
-        bot_user = self.bot.user
+        run_as = ctx.guild.owner
         length = await self.config.guild(ctx.guild).length()
         cooldown = await self.config.guild(ctx.guild).cooldown()
         time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
@@ -49,17 +49,17 @@ class Shutup(commands.Cog):
             delta_hours = divmod((now - datetime.strptime(last_use, "%c")).total_seconds(), 3600)[0]
             if delta_hours < cooldown:
                 await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
-                ctx.author = bot_user
+                ctx.author = run_as
                 await ctx.send(f"invoking mute command as {str(ctx.author)}")
                 await ctx.invoke(self.bot.get_command('mute'), users=[caller], time_and_reason=time_and_reason)
             else:
                 last_use = await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
-                ctx.author = bot_user
+                ctx.author = run_as
                 await ctx.send(f"invoking mute command as {str(ctx.author)}")
                 await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
         else:
             await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
-            ctx.author = bot_user
+            ctx.author = run_as
             await ctx.send(f"invoking mute command as {str(ctx.author)}")
             await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
 
