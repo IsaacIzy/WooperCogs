@@ -38,7 +38,7 @@ class Shutup(commands.Cog):
         !shutup @user
         '''
         caller = ctx.author
-        bot_user = self.bot.author
+        bot_user = self.bot.user
         length = await self.config.guild(ctx.guild).length()
         cooldown = await self.config.guild(ctx.guild).cooldown()
         time_and_reason = {"duration":timedelta(seconds=length), "reason":"shutup"}
