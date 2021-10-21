@@ -49,19 +49,25 @@ class Shutup(commands.Cog):
             delta_hours = divmod((now - datetime.strptime(last_use, "%c")).total_seconds(), 3600)[0]
             if delta_hours < cooldown:
                 await ctx.reply("Nice try kid, shutup is on cooldown :mirror:")
-                ctx.author = run_as
-                await ctx.send(f"invoking mute command as {str(ctx.author)}")
-                await ctx.invoke(self.bot.get_command('mute'), users=[caller], time_and_reason=time_and_reason)
+                await ctx.send(f"Running mute command as {str(run_as)}")
+                mute_cmd = copy(ctx.message)
+                mute_cmd.author = run_as
+                mute_cmd.content = ctx.prefix + f"mute {caller} 30s shutup"
+                ctx.bot.dispatch("message", mute_cmd)
             else:
                 last_use = await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
-                ctx.author = run_as
                 await ctx.send(f"invoking mute command as {str(ctx.author)}")
-                await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
+                mute_cmd = copy(ctx.message)
+                mute_cmd.author = run_as
+                mute_cmd.content = ctx.prefix + f"mute {user} 30s shutup"
+                ctx.bot.dispatch("message", mute_cmd)
         else:
             await self.config.member(ctx.author).last_use.set(now.strftime("%c"))
-            ctx.author = run_as
             await ctx.send(f"invoking mute command as {str(ctx.author)}")
-            await ctx.invoke(self.bot.get_command('mute'), users=[user], time_and_reason=time_and_reason)
+            mute_cmd = copy(ctx.message)
+            mute_cmd.author = run_as
+            mute_cmd.content = ctx.prefix + f"mute {user} 30s shutup"
+            ctx.bot.dispatch("message", mute_cmd)
 
         
     @shutup.command()
